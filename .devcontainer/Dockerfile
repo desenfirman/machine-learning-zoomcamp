@@ -2,10 +2,11 @@ FROM continuumio/miniconda3:23.3.1-0
 
 # Install Jupyter Notebook
 
-
 RUN conda create -n ml-zoomcamp python=3.9
 # SHELL ["conda", "run", "-n", "ml-zoomcamp", "/bin/bash", "-c"]
 RUN conda install -n ml-zoomcamp numpy pandas scikit-learn seaborn jupyter ipykernel
+
+RUN apt-get update && apt-get install -y docker.io
 
 RUN useradd -u 1000 -m user
 USER user
