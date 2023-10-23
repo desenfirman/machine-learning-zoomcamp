@@ -22,15 +22,17 @@ The goal of this homework is to create a regression model for predicting housing
 ### Preparing the dataset 
 
 For this homework, we only want to use a subset of data. This is the same subset we used in homework #2.
+But in contrast to homework #2, we are going to use all columns of the dataset.
 
 First, keep only the records where `ocean_proximity` is either `'<1H OCEAN'` or `'INLAND'`
 
 Preparation:
 
-* Apply the log tranform to `median_house_value`.
+* Fill missing values with zeros.
+* Apply the log transform to `median_house_value`.
 * Do train/validation/test split with 60%/20%/20% distribution. 
 * Use the `train_test_split` function and set the `random_state` parameter to 1.
-* Use `DictVectorizer(sparse=True)` to turn the dataframe into matrices.
+* Use `DictVectorizer(sparse=True)` to turn the dataframes into matrices.
 
 
 ## Question 1
@@ -75,6 +77,7 @@ Now let's experiment with the `n_estimators` parameter
 
 
 After which value of `n_estimators` does RMSE stop improving?
+Consider 3 decimal places for retrieving the answer.
 
 - 10
 - 25
@@ -87,11 +90,13 @@ After which value of `n_estimators` does RMSE stop improving?
 Let's select the best `max_depth`:
 
 * Try different values of `max_depth`: `[10, 15, 20, 25]`
-* For each of these values, try different values of `n_estimators` from 10 till 200 (with step 10)
+* For each of these values,
+  * try different values of `n_estimators` from 10 till 200 (with step 10)
+  * calculate the mean RMSE 
 * Fix the random seed: `random_state=1`
 
 
-What's the best `max_depth`:
+What's the best `max_depth`, using the mean RMSE?
 
 * 10
 * 15
@@ -103,10 +108,9 @@ What's the best `max_depth`:
 
 We can extract feature importance information from tree-based models. 
 
-At each step of the decision tree learning algorith, it finds the best split. 
-When doint it, we can calculate "gain" - the reduction in impurity before and after the split. 
-This gain is quite useful in understanding what are the imporatant features 
-for tree-based models.
+At each step of the decision tree learning algorithm, it finds the best split. 
+When doing it, we can calculate "gain" - the reduction in impurity before and after the split. 
+This gain is quite useful in understanding what are the important features for tree-based models.
 
 In Scikit-Learn, tree-based models contain this information in the
 [`feature_importances_`](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html#sklearn.ensemble.RandomForestRegressor.feature_importances_)
@@ -114,18 +118,18 @@ field.
 
 For this homework question, we'll find the most important feature:
 
-* Train the model with these parametes:
-    * `n_estimators=10`,
-    * `max_depth=20`,
-    * `random_state=1`,
-    * `n_jobs=-1` (optional)
+* Train the model with these parameters:
+  * `n_estimators=10`,
+  * `max_depth=20`,
+  * `random_state=1`,
+  * `n_jobs=-1` (optional)
 * Get the feature importance information from this model
 
 
-What's the most important feature? 
+What's the most important feature (among these 4)? 
 
 * `total_rooms`
-* `median_income`	
+* `median_income`
 * `total_bedrooms`
 * `longitude`
 
@@ -159,13 +163,13 @@ Which eta leads to the best RMSE score on the validation dataset?
 
 * 0.3
 * 0.1
-* Both gives same
+* Both give equal value
 
 
 
 ## Submit the results
 
-- Submit your results here: TBA
+- Submit your results here: https://forms.gle/Qa2SuzG7QGZNCaoV9
 - If your answer doesn't match options exactly, select the closest one.
 - You can submit your solution multiple times. In this case, only the last submission will be used
 
