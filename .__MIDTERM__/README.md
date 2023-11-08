@@ -83,7 +83,7 @@ Target
 Here is the EDA that performed before the model building
 1. Missing Value Checking: There are 9 columns of that has a missing value. Seven columns are classified as a numerical feature while the other is a categorical. The numerical features columns are release_clause_eur, pace, shooting, passing, dribbling, defending and physic and it's safe to fill it with zero value, since the zero itself represent the lowest possible value of those features. While the categorical features like team_position and nation_position will be filled with 'OTHER' category
 
-2. Imbalance Class Check: The data ratio between a player with trait Early Crosser and Not is 10:90. Therefore, it's necessary to make the data distribution ratio is same for both class to avoid the higher True Negative p![Fast API Docs Demo](./pictures/fast_api_1.png)rediction in the model. In this case, the RandomUnderSample strategies is used to perform a sampling of the Negative class, so the distribution will be same with the Positive class.
+2. Imbalance Class Check: The data ratio between a player with trait Early Crosser and Not is 10:90. Therefore, it's necessary to make the data distribution ratio is same for both class to avoid the higher True Negative prediction in the model. In this case, the RandomUnderSample strategies is used to perform a sampling of the Negative class, so the distribution will be same with the Positive class.
 
 3. Checking the player distribution. eg: Average, STD dev, Min-Max value and the Quartile value for the each features.
 
