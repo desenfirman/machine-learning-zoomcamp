@@ -7,8 +7,6 @@ from imblearn.under_sampling import RandomUnderSampler
 from sklearn.metrics import roc_auc_score
 from xgboost import XGBClassifier
 
-from sklearn.linear_model import LogisticRegression
-
 import pickle
 
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%I:%M:%S')
@@ -95,7 +93,8 @@ X_res, y_res = undersample.fit_resample(df.drop(columns='target'), df['target'])
 df = pd.concat([X_res, y_res], axis=1)
 
 logging.info("Identifying the dataset's categorical and numerical features")
-categorical_cols, numerical_cols = [], []
+categorical_cols, numerical_cols, non_used_cols = [], [], ['preferred_foot']
+logging.info(f"Non used feature for this training session is: {non_used_cols}")
 
 for i, col_name in enumerate(df.drop(columns=['sofifa_id', 'short_name', 'target']).columns):
     # Check if the column is numerical
