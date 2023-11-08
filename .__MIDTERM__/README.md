@@ -2,7 +2,7 @@
 
 ## Problem Description
 
-In FIFA 20, some of player have traits which represent the in-game characteristic that give the player a unique skills & distinct player style between the players. There are so many player traits that available in the FIFA 20, for example: Leadership, Clinical Finisher, Speedster, Long Shooter and many more. In this case, the goal is to predict if a player has a trait an Early Crosser. An Early Crosser itself described as a player with a tendency to perform a direct cross to the open spaces of opponent's penalty area before reaching the end line or corner flag. This kind of player usually has a vision of the other teammates movement to the open-spaces in the front of the opponent's penalty area combined with a good long ball cross. While at the same time, there are multiple attributes that made the player has a Early Crosser trait.
+In FIFA 20, some of player have traits which represent the in-game characteristic that give the player a unique skills & distinct player style between the players. There are so many player traits that available in the FIFA 20, for example: Leadership, Clinical Finisher, Speedster, Long Shooter and many more. In this case, the goal is to predict if a player has a trait an **Early Crosser**. An Early Crosser itself described as a player with a tendency to perform a direct cross to the open spaces of opponent's penalty area before reaching the end line or corner flag. This kind of player usually has a vision of the other teammates movement to the open-spaces in the front of the opponent's penalty area combined with a good long ball cross. While at the same time, there are multiple attributes that made the player has a Early Crosser trait.
 
 ![Early Crosser](./pictures/early-crosser.png)
 
@@ -75,15 +75,15 @@ Feature
 - defending_sliding_tackle
 
 Target
-- player_traits (only select the 'Early Crosser' and mark player which has the related trait using value=1 and value=0 respectively)
+- player_traits (only select the **Early Crosser** and mark player which has the related trait using **value=1** and **value=0** respectively)
 
 
 ## Exploratory Data Analysis (EDA)
 
 Here is the EDA that performed before the model building
-1. Missing Value Checking: There are 9 columns of that has a missing value. Seven columns are classified as a numerical feature while the other is a categorical. The numerical features columns are release_clause_eur, pace, shooting, passing, dribbling, defending and physic and it's safe to fill it with zero value, since the zero itself represent the lowest possible value of those features. While the categorical features like team_position and nation_position will be filled with 'OTHER' category
+1. Missing Value Checking: There are 9 columns of that has a missing value. Seven columns are classified as a numerical feature while the other is a categorical. The numerical features columns are release_clause_eur, pace, shooting, passing, dribbling, defending and physic and it's safe to fill it with **zero value**, since the zero itself represent the lowest possible value of those features. While the categorical features like team_position and nation_position will be filled with **OTHER** category
 
-2. Imbalance Class Check: The data ratio between a player with trait Early Crosser and Not is 10:90. Therefore, it's necessary to make the data distribution ratio is same for both class to avoid the higher True Negative prediction in the model. In this case, the RandomUnderSample strategies is used to perform a sampling of the Negative class, so the distribution will be same with the Positive class.
+2. Imbalance Class Check: The data ratio between a player with trait Early Crosser and Not is 10:90. Therefore, it's necessary to make the data distribution ratio is same for both class to avoid the higher True Negative prediction in the model. In this case, the **RandomUnderSample** strategies is used to perform a sampling of the Negative class, so the distribution will be same with the Positive class.
 
 3. Checking the player distribution. eg: Average, STD dev, Min-Max value and the Quartile value for the each features.
 
@@ -121,7 +121,7 @@ docker build -t player-trait-prediction .
 ```
 
 ## Cloud Deployment
-The **Google Cloud Run** is used as place to serve the model. To make the requirement and procedure to deploy in Google Cloud Run to be more standardize, a Google Cloud SDK CLI docker version combined with docker socket binding strategy(more information: https://betterprogramming.pub/about-var-run-docker-sock-3bfd276e12fd) will be used as a tool from pushing the image to the Google Container Registry to deploying the pushed image as a service into the Google Cloud Run
+The **Google Cloud Run** is used as place to serve the model. To make the requirement and procedure to deploy in Google Cloud Run to be more standardize, a Google Cloud SDK CLI docker version combined with docker socket binding strategy (more information: https://betterprogramming.pub/about-var-run-docker-sock-3bfd276e12fd) will be used from pushing the image to the Google Container Registry to deploying the pushed image as a service into the Google Cloud Run
 
 Here is step by step:
 
@@ -160,7 +160,7 @@ docker run \
 6. After it pushed into Google Container Registry, run this following command to create a Cloud Run service and serve them through cloud:
 
 ```bash
-!docker run \
+docker run \
     --rm \
     --volumes-from gcloud-config \
     -v /var/run/docker.sock:/var/run/docker.sock \
