@@ -1,11 +1,12 @@
 import requests
 import json
 
-url = "http://localhost:8000/batch-predict"
+url = "https://predict-player-trait-xv6leznboq-et.a.run.app/batch-predict/"
 
 with open('./data/sample_for_predict_test.json', 'r') as fp:
     payload = json.load(fp)
     headers = {
+        'accept': 'application/json',
         'Content-Type': 'application/json'
     }
 
