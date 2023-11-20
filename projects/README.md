@@ -53,6 +53,7 @@ For a project, you repository/folder should contain the following:
 > To evaluate the projects, we'll use peer reviewing. This is a great opportunity for you to learn from each other.
 > * To get points for your project, you need to evaluate 3 projects of your peers
 > * You get 3 extra points for each evaluation
+> * If you don't evaluate your peers, you fail the project
 
 Tip: you can use https://nbviewer.org/ to render notebooks if GitHub doesn't work
 
@@ -136,6 +137,13 @@ Violating any of this will result in 0 points for this project.
 Explore a collection of projects completed by members of our community. The projects cover a wide range of topics and utilize different tools and techniques. Feel free to delve into any project and see how others have tackled real-world problems with data, structured their code, and presented their findings. It's a great resource to learn and get ideas for your own projects.
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://datatalksclub-projects.streamlit.app/)
+
+### Zoomcamp 2023
+
+* [Midterm project](../cohorts/2023/projects.md#midterm-project)
+* [Capstone 1](../cohorts/2023/projects.md#capstone-1)
+* [Capstone 2](../cohorts/2023/projects.md#capstone-2)
+
 
 ### Zoomcamp 2022
 
