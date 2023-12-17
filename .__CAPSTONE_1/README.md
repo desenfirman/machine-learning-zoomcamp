@@ -3,11 +3,11 @@
 ## Problem Description
 Global Summary of the Day is one of the famous dataset in the BigQuery public data. This public dataset was created by National Oceanic and Atmospheric Administrator (NOAA) and it consists of daily weather elements collected from over 9000 stations in different region of country. This data includes mean value of daily temperatures, sea level pressure, wind speed, precipation and many more metric. The data also includes the column `fog, rain_drizzle, snow_ice_pellets, hail, thunder, tornado_funnel_cloud` which represent the occurence of event related to weather that reported during the day.
 
-In this project, we will use this dataset to predict if the current day will be raining or not. We will use the weather performance in the **last 7 days** from the GSOD data to predict the column `rain_drizzle`. Since the dataset is in form of daily performance, it will be needed to perform a feature-engineering to make the last 7 days metric is available as a feature during the training and inferencing. (eg: day-1, day-2, day-n)
+In this project, we will use this dataset to predict if the current day will be raining or not. We will use the weather performance in the **last 7 days** from the GSOD data to predict if there is a **sign of rain or drizzle** during the day (the column `rain_drizzle`). Since the dataset is in form of daily performance, it will be needed to perform a feature-engineering to make the last 7 days metric is available as a feature during the training and inferencing. (eg: day-1, day-2, day-n)
 
 ## Problem Scope
 
-The machine learning model will use the data only from station id **'967450'**, which is the **JAKARTA/OBSERVATORY - INDONESIA** Station. The data that will be used is data started from **2017** to **2023**. The selected features for this problem are:
+The machine learning model will use the data only from station id **'967450'**, which is the **JAKARTA/OBSERVATORY - INDONESIA** Station. The data that will be used is data started from **2013** to **2023**. The selected features for this problem are:
 
 Identifier:
 - date: represent the date of the current day
@@ -41,6 +41,8 @@ Engineered / Augmented feature:
 Target: 
 - rain_drizzle: Indicators (1 = yes, 0 = no/not reported) for the occurrence during the day
 
+Here is the query of the prepared data that we'll use in this capstone project:
+
 ```sql
 
 WITH src AS (
@@ -61,8 +63,32 @@ WITH src AS (
     flag_prcp as flag_precipitation,
     rain_drizzle,
   FROM `bigquery-public-data.noaa_gsod.gsod*`
-  WHERE _TABLE_SUFFIX IN ('2017', '2018', '2019', '2020', '2021', '2022', '2023')
+  WHERE _TABLE_SUFFIX IN (
+      '2013',
+      '2014',
+      '2015',
+      '2016',
+      '2017',
+      '2018',
+      '2019',
+      '2020',
+      '2021',
+      '2022',
+      '2023'
+    )
     AND stn = '967450' #JAKARTA/OBSERVATORY - INDONESIA Station
+)
+
+, fill_missing_date AS (
+  SELECT
+    date_fill as date,
+    FORMAT_DATE('%Y', date_fill) as year,
+    FORMAT_DATE('%m', date_fill) as mo,
+    FORMAT_DATE('%d', date_fill) as da,
+    b.* EXCEPT(`date`, year, mo, da)
+  FROM UNNEST(GENERATE_DATE_ARRAY('2013-01-01', '2023-12-13')) as date_fill
+  LEFT JOIN src b
+    ON b.date = date_fill
 )
 
 , lagging_window AS (
@@ -114,7 +140,7 @@ WITH src AS (
     LAG(flag_precipitation, 2) OVER(date_window) as flag_precipitation_prev_2_day,
     LAG(flag_precipitation, 1) OVER(date_window) as flag_precipitation_prev_1_day,
     rain_drizzle
-  FROM src
+  FROM fill_missing_date
   WINDOW date_window AS (
     ORDER BY date
   )
@@ -122,9 +148,10 @@ WITH src AS (
 
 SELECT *
 FROM lagging_window
-WHERE avg_temp_prev_7_day is not null
 ORDER BY date
 
 ```
 
 To make the scope of the problem is building the machine learning model instead of data-engineering, the data will be prepared and stored alongside in this repository on the directory `data/gsod_jakarta_prepared.csv`.
+
+## Exploratory Data Analysis
