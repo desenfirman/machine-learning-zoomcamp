@@ -110,7 +110,7 @@ logging.info(f"Score on validation set: {roc_auc_score(y_val, y_pred)}")
 y_pred = model.predict_proba(X_test)[:, 1]
 logging.info(f"Score on test set: {roc_auc_score(y_test, y_pred)}")
 
-output_model_file = './model/final_model_.bin'
+output_model_file = './model/final_model.bin'
 output_dv_file = './model/final_dv.bin'
 
 logging.info(f"Saving model into {output_model_file}")
