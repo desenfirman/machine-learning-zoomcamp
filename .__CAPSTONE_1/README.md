@@ -154,4 +154,91 @@ ORDER BY date
 
 To make the scope of the problem is building the machine learning model instead of data-engineering, the data will be prepared and stored alongside in this repository on the directory `data/gsod_jakarta_prepared.csv`.
 
-## Exploratory Data Analysis
+## Exploratory Data Analysis (EDA)
+
+Below are the thing that performed during the Exploratory Data Analysis process:
+
+1. Missing value checking: For the starter, the value that marked as missing will have their own value as stated in the data documentation before (eg: avg_temp will have `9999.9`). However, there is a condition when the date reported is missing in the dataset. If you take a look at the SQL query before, in the CTE: `filling_missing_date`, there is a process to make the date is available in the dataset, with the condition of the all metric value (including the `rain_drizzle`` target) having a null value. So, the missing value handling is still performed during the EDA process. 
+
+Here is the detail of the missing value handling. Among the all columns, there is only one categorical value named: flag_precipitation. The missing value for this column will be set as `OTHER`:
+
+```
+    'avg_temp': 9999.9,
+    'avg_dew_point': 9999.9,
+    'avg_sea_level_point': 9999.9,
+    'avg_wind_speed': 999.9,
+    'total_precipitation': 99.99,
+    'flag_precipitation': 'OTHER'
+```
+
+We don't perform the missing value handling on the `rain_drizzle` column. As the result, the NA value will be discarded.
+
+2. Imbalance Class Check: The data ratio between the zero and one-class is 65:35. Therefore, it's important to perform a handling to Imbalance Class. So, the model doesn't have a tendency to predict the **TRUE Negative** (a non rainy prediction). In this scenario, the RandomUnderSample strategy is used to make the number zero-class samples are same with the one-class sample
+
+3. Checking the dataset distribution
+
+4. Perform the feature importance analysis to the target class. The categorical column like `flag_precipitation` will use the mutual_info score to define the feature importance. While the numerical column like `avg_temp`, `avg_dew_point`, `avg_sea_level_point`, `avg_wind_speed`, `total_precipitation` will use the correlation score to get the feature importance. This will apply into all the `prev_1_day` into `prev_7_day` column.
+
+During the feature importance analysis, **all the precipitation** related columns have the highest feature importance both in the numerical column (total_precipitation) and categorical column (flag_precipitation). There are also some columns have a feature importance score below to 0.01 and this column will be discarded during training process
+
+More details on Notebook: [Notebook EDA](notebook_eda.ipynb)
+
+## Model Training
+There are five models were trained on the prepared dataset from the EDA step. The dataset is splitted using ratio 60/20/20. Below is the summaries of the training process:
+
+| Training Approach | ROC-AUC on Training Set | ROC-AUC on Validation Set | ROC-AUC on Test Set |
+| ---------------|----------------------|------------------|-------------------|
+| Untuned SGDClassifier | 0.515561 | 0.525430 | 0.503423 |
+| Tuned SGDClassifier | 0.690540 | 0.694320 | 0.649276 |
+| Untuned RandomForestClassifier | 1.000000 | 0.762830 | 0.743102 |
+| Tuned RandomForestClassfier | 0.785654 | 0.774175 | 0.739666 |
+| Tuned XGBoost | 0.776554 | 0.748889 | 0.724983 |
+
+Summary:**Untuned RandomForestClassifier** gives the best ROC-AUC on the Test-Set while **Tuned RandomForestClassifier** gives the best ROC-AUC in validation test. However, the **Untuned RandomForestClassifier** tend to be overfitting. 
+  
+So, we'll take the **Tuned RandomForestClassifier** as model we will use since it doesn't give an overfitting and has a best performance in the validation set.
+
+More details on Notebook: [Notebook Training](notebook_training.ipynb)
+
+## Exporting Notebook to Script
+  > PS: This following section and all of the next section can be found on the Notebook: [Notebook Deployment](notebook_deployment.ipynb)
+
+To make the training phase in the file `notebook_training.ipynb` is reproducible and can be run just one single command, There is a file named `train.py` which perform all the sequences of training phase. This will produce two file, a model (final_model.bin) and dict vectorizer (final_dv.bin)
+
+## Model Deployment
+To run the model as a prediction service, there is a script named `predict.py` which generally run a FastAPI webserver as a background and process series of the inference feature to the endpoint `/batch-predict`. The `predict-test.py` file contains a sample requests and it will use the sample payload using the json file in path `sample_for_predict_test.json`.
+
+## Dependency an Environment Management
+The project use pipenv as the depenency management. The project module requirements is stored in the `Pipfile` and `Pipfile.lock`. The `Pipfile` consists the pypi's module requirements with their version's constraint. While `Pipfile.lock` file is a generated file that snapshot the packages version and hash. The `Pipfile.lock` intended to lock the package requirements so the module version is consistent and there is no accidental upgrade during the install process.
+
+Before using the pipenv, you need to install the module:
+```bash
+pip install pipenv
+```
+
+After the module is installed, go to the directory `./__CAPSTONE_1` (this directory) and run this following commnand:
+```bash
+pipenv install
+```
+
+Then, to run the script using the installed pipenv environment. You can run this following command:
+```bash
+pipenv run python3 -m <name_of_script_without_dot_py>
+```
+
+## Containerization
+The script to serve the model is encapsulated into one single docker image, so the execution are keep isolated from another application. A `Dockerfile` is provided in this directory for building the docker image. The `Dockerfile` will run environment and package provisioning using the **pipenv** and copy all the assets like model, dict_vectorizer and serving script (`predict.py`) to the docker image.
+
+You can use the following command to build the image
+
+```bash
+docker build -t weather-raining-prediction .
+```
+
+After the command is succesfully run, you can run this following command to run the containerized application in the background:
+
+```bash
+docker run --rm --name weather-raining-prediction -t weather-raining-prediction
+```
+
+You can access it using port **8080** either using **localhost** or **Docker IPv4 address**. For example, if you access this url http://172.17.0.3:8080/docs, this will open the API documentation using the Docker IPv4 address
